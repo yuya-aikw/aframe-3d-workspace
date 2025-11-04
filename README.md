@@ -1,29 +1,18 @@
-# README #
+# Info
+[Japan Mobility Show Nagoya 2025 (2025/11/22~2025/11/24)](https://www.japan-mobility-show.com/) のWebXR実装
 
-This README would normally document whatever steps are necessary to get your application up and running.
+# File Structure
+- [作っていただいた車体のモデル](https://nucl.slack.com/archives/C09LP0QSBM3/p1761111898226899?thread_ts=1760572530.666869&cid=C09LP0QSBM3)を展開
+~~~
+jms2025_demo
+├── README.md
+├── index.html
+└── yamaha_ae88
+    ├── public
+    └── src
+~~~
 
-### What is this repository for? ###
-
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
-
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+# Running
+- 適当なサーバーを立ててhttpsでindex.htmlを開く
+# Usage
+## VRゴーグル
