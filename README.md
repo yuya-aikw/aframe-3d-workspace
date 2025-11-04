@@ -13,6 +13,17 @@ jms2025_demo
 ~~~
 
 # Running
-- 適当なサーバーを立ててhttpsでindex.htmlを開く
+適当なサーバーを立ててhttpsでindex.htmlを開く
+## Pythonの検証用webサーバー (httpのみ)
+- ターミナルで`python -m http.server 8000`
+- ブラウザで[http://localhost:8000](http://localhost:8000)にアクセス
+- [WebXRの拡張機能](https://www.crossroad-tech.com/entry/immersive-web-emulator)
 # Usage
-## VRゴーグル
+
+# Tips
+<!-- ## local開発環境でのSSL有効化
+- https://tomoyayoshida.com/blog/mkcert-ssl-setup/
+1. SSL証明書と秘密鍵の作成
+~~~
+
+~~~ -->
