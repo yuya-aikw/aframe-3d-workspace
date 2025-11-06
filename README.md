@@ -13,7 +13,7 @@ jms2025_demo
 
 # Running
 - ターミナルで`pnpm i` -> `pnpm run dev-https`
-- ブラウザで[http://localhost:8000](http://localhost:3000)にアクセス
+- ブラウザで[http://localhost:3000](http://localhost:3000)にアクセス
 - [WebXRの拡張機能](https://www.crossroad-tech.com/entry/immersive-web-emulator)
 # Usage
 
