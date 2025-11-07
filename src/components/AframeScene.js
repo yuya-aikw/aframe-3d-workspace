@@ -1,13 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import RosConnection from './ros/RosConnection';
+import LidarData from "./ros/LidarData";
 
 export default function AframeScene() {
   const [isAframeReady, setIsAframeReady] = useState(false);
   const [areAssetsReady, setAreAssetsReady] = useState(false);
+  const [ros, setRos] = useState(null);
   const assetsRef = useRef(null);
 
-  useEffect(() => {
+  useEffect(() => {s
     if (typeof window === "undefined") return;
     if (window.AFRAME) {
       setIsAframeReady(true);
@@ -116,6 +119,12 @@ export default function AframeScene() {
               <a-text value="Loading model..." color="#000"></a-text>
             </a-entity>
           )}
+
+          <RosConnection rosUrl="wss://localhost:9090" rosDomainId="0" setRos={setRos} />
+          {ros &&
+            <LidarData ros={ros} position="0 1 0" rotation="0 0 0"/>
+          }
+          
         </a-scene>
       ) : (
         <div className="flex h-full items-center justify-center">
