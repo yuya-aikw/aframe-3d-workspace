@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import RosConnection from './ros/RosConnection';
 import LidarData from "./ros/LidarData";
+import './vehicle/VehicleController';
 
 export default function AframeScene() {
   const [isAframeReady, setIsAframeReady] = useState(false);
@@ -10,7 +11,7 @@ export default function AframeScene() {
   const [ros, setRos] = useState(null);
   const assetsRef = useRef(null);
 
-  useEffect(() => {s
+  useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.AFRAME) {
       setIsAframeReady(true);
@@ -80,10 +81,10 @@ export default function AframeScene() {
 
           {areAssetsReady ? (
             <>
-              <a-entity id="rig" movement-controls="fly: true;">
+              <a-entity id="rig" movement-controls="fly: false;" vehicle-controller>
                 <a-entity
                   camera
-                  position="0 1.6 0"
+                  position="0 1.2 0"
                   look-controls="pointerLockEnabled: false"
                 ></a-entity>
                 <a-entity oculus-touch-controls="hand: left"></a-entity>
@@ -95,7 +96,7 @@ export default function AframeScene() {
               <a-plane
                 id="ground"
                 position="0 0 0"
-                rotation="-90 0 0"
+                rotation="-90 0 90"
                 width="10"
                 height="10"
                 color="#888888"
