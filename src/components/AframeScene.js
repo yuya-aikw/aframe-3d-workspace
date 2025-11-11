@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import RosConnection from './ros/RosConnection';
 import LidarData from "./ros/LidarData";
+import { processMapObjects } from './MapObjects';
 import './vehicle/VehicleController';
 
 export default function AframeScene() {
@@ -10,6 +11,7 @@ export default function AframeScene() {
   const [areAssetsReady, setAreAssetsReady] = useState(false);
   const [ros, setRos] = useState(null);
   const assetsRef = useRef(null);
+  const { assets: mapAssets, entities: mapEntities } = processMapObjects();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -77,6 +79,7 @@ export default function AframeScene() {
               id="TireRR"
               src="/yamaha_ae88/yamaha_ae88_TireRR.gltf"
             ></a-asset-item>
+            {mapAssets}
           </a-assets>
 
           {areAssetsReady ? (
@@ -101,6 +104,8 @@ export default function AframeScene() {
                 height="10"
                 color="#888888"
               ></a-plane>
+
+              {mapEntities}
 
               <a-entity id="yamaha_ae88" position="0 1 0" rotation="0 0 0">
                 <a-entity gltf-model="#body"></a-entity>
