@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import RosConnection from './ros/RosConnection';
 import LidarData from "./ros/LidarData";
-import { processMapObjects } from './MapObjects';
+import { processMapObjects } from './map/MapObjects';
 import './vehicle/VehicleController';
 
 export default function AframeScene() {
