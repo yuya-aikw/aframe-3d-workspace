@@ -35,47 +35,48 @@ export default function AframeScene() {
           embedded
           vr-mode-ui="enabled: false"
           style={{ height: "100vh", width: "100vw" }}
+          gltf-model="https://www.gstatic.com/draco/v1/decoders/" // src="/yamaha_ae88_draco/... : compressed model,  src="/yamaha_ae88/... : original model
         >
           <a-assets ref={assetsRef}>
             <a-asset-item
               id="body"
-              src="/yamaha_ae88/yamaha_ae88_body.gltf"
+              src="/yamaha_ae88_draco/yamaha_ae88_body.gltf"
             ></a-asset-item>
             <a-asset-item
               id="roof"
-              src="/yamaha_ae88/yamaha_ae88_roof.gltf"
+              src="/yamaha_ae88_draco/yamaha_ae88_roof.gltf"
             ></a-asset-item>
             <a-asset-item
               id="frame1"
-              src="/yamaha_ae88/yamaha_ae88_frame1.gltf"
+              src="/yamaha_ae88_draco/yamaha_ae88_frame1.gltf"
             ></a-asset-item>
             <a-asset-item
               id="frame2"
-              src="/yamaha_ae88/yamaha_ae88_frame2.gltf"
+              src="/yamaha_ae88_draco/yamaha_ae88_frame2.gltf"
             ></a-asset-item>
             <a-asset-item
               id="frameR"
-              src="/yamaha_ae88/yamaha_ae88_frameR.gltf"
+              src="/yamaha_ae88_draco/yamaha_ae88_frameR.gltf"
             ></a-asset-item>
             <a-asset-item
               id="frameF"
-              src="/yamaha_ae88/yamaha_ae88_frameF.gltf"
+              src="/yamaha_ae88_draco/yamaha_ae88_frameF.gltf"
             ></a-asset-item>
             <a-asset-item
               id="TireFL"
-              src="/yamaha_ae88/yamaha_ae88_TireFL.gltf"
+              src="/yamaha_ae88_draco/yamaha_ae88_TireFL.gltf"
             ></a-asset-item>
             <a-asset-item
               id="TireFR"
-              src="/yamaha_ae88/yamaha_ae88_TireFR.gltf"
+              src="/yamaha_ae88_draco/yamaha_ae88_TireFR.gltf"
             ></a-asset-item>
             <a-asset-item
               id="TireRL"
-              src="/yamaha_ae88/yamaha_ae88_TireRL.gltf"
+              src="/yamaha_ae88_draco/yamaha_ae88_TireRL.gltf"
             ></a-asset-item>
             <a-asset-item
               id="TireRR"
-              src="/yamaha_ae88/yamaha_ae88_TireRR.gltf"
+              src="/yamaha_ae88_draco/yamaha_ae88_TireRR.gltf"
             ></a-asset-item>
           </a-assets>
 
