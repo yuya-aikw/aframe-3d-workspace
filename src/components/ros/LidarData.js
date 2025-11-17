@@ -6,37 +6,38 @@ import RosTopicListener from './RosTopicListener';
 // x -> x
 // y -> -z
 // z -> y
-const Message2ThreePointsXYZ = ({ message ,position, rotation}) => {
+
+const Message2ThreePointsXYZ = ({ message, position, rotation }) => {
     const entityRef = useRef(null);
     const geometryRef = useRef(null);
     const pointsRef = useRef(null);
 
     useEffect(() => {
-            const msg = message;
-            const el = entityRef.current;
-            
-            // A-Frame entity が準備できるまで待機
-            if (!el || !el.object3D) {
-                return;
-            }
+        const msg = message;
+        const el = entityRef.current;
 
-            const THREE = (typeof window !== 'undefined' && window.THREE) || (typeof globalThis !== 'undefined' && globalThis.THREE);
-            if (!THREE) {
-                return;
-            }
+        // A-Frame entity が準備できるまで待機
+        if (!el || !el.object3D) {
+            return;
+        }
 
-            if (!msg || !msg.data || !msg.width) {
-                // remove existing points if any
-                if (pointsRef.current) {
-                    if (typeof el.removeObject3D === 'function') el.removeObject3D('points');
-                    else if (el.object3D && pointsRef.current.parent) el.object3D.remove(pointsRef.current);
-                    if (pointsRef.current.geometry) pointsRef.current.geometry.dispose();
-                    if (pointsRef.current.material) pointsRef.current.material.dispose();
-                    pointsRef.current = null;
-                    geometryRef.current = null;
-                }
-                return;
+        const THREE = (typeof window !== 'undefined' && window.THREE) || (typeof globalThis !== 'undefined' && globalThis.THREE);
+        if (!THREE) {
+            return;
+        }
+
+        if (!msg || !msg.data || !msg.width) {
+            // remove existing points if any
+            if (pointsRef.current) {
+                if (typeof el.removeObject3D === 'function') el.removeObject3D('points');
+                else if (el.object3D && pointsRef.current.parent) el.object3D.remove(pointsRef.current);
+                if (pointsRef.current.geometry) pointsRef.current.geometry.dispose();
+                if (pointsRef.current.material) pointsRef.current.material.dispose();
+                pointsRef.current = null;
+                geometryRef.current = null;
             }
+            return;
+        }
         const binaryString = atob(msg.data);
         const rows = msg.width || 0;
         const stride = msg.point_step || 32;  // デフォルト32バイト（標準的なPointCloud2）
@@ -54,7 +55,7 @@ const Message2ThreePointsXYZ = ({ message ,position, rotation}) => {
 
         const dataView = new DataView(bytes.buffer);
         const positionArray = new Float32Array(rows * 3);
-        
+
         // xyz のオフセットを取得（デフォルトは標準的な配置）
         const xOffset = msg.fields?.[0]?.offset || 0;
         const yOffset = msg.fields?.[1]?.offset || 4;
@@ -87,7 +88,7 @@ const Message2ThreePointsXYZ = ({ message ,position, rotation}) => {
             positionArray[i * 3 + 1] = z;
             positionArray[i * 3 + 2] = -y;
         }
-    
+
         // create or update geometry
         if (!geometryRef.current) {
             geometryRef.current = new THREE.BufferGeometry();
@@ -106,11 +107,11 @@ const Message2ThreePointsXYZ = ({ message ,position, rotation}) => {
 
         // create or update Points and attach to A-Frame entity
         if (!pointsRef.current) {
-            const material = new THREE.PointsMaterial({ 
-                color: 0x00ff00, 
-                size: 0.05, 
+            const material = new THREE.PointsMaterial({
+                color: 0x00ff00,
+                size: 0.01,
                 sizeAttenuation: true
-             });
+            });
             pointsRef.current = new THREE.Points(geometryRef.current, material);
             if (typeof el.setObject3D === 'function') {
                 el.setObject3D('points', pointsRef.current);
@@ -138,7 +139,7 @@ const Message2ThreePointsXYZ = ({ message ,position, rotation}) => {
         };
     }, []);
 
-    return <a-entity ref={entityRef} position={position} rotation={rotation}/>;
+    return <a-entity ref={entityRef} position={position} rotation={rotation} />;
 };
 
 const LidarData = ({
@@ -146,8 +147,8 @@ const LidarData = ({
     topicName = '/livox/lidar',
     messageType = 'sensor_msgs/PointCloud2',
     throttleMs = 200, //200ms,5Hz でa-frame更新
-    position="0 0 0",
-    rotation="0 0 0"
+    position = "0 0 0",
+    rotation = "0 0 0"
 }) => {
     const [message, setMessage] = useState(null);
     const [sceneReady, setSceneReady] = useState(false);
@@ -155,7 +156,7 @@ const LidarData = ({
 
     // A-Frame シーンの初期化を待つ
     useEffect(() => {
-        const checkScene = () => {
+        const checkScene = () => {s
             const scene = document.querySelector('a-scene');
             if (scene?.hasLoaded) {
                 setSceneReady(true);

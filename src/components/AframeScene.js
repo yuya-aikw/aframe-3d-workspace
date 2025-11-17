@@ -70,54 +70,55 @@ export default function AframeScene() {
           embedded
           vr-mode-ui="enabled: false"
           style={{ height: "100vh", width: "100vw" }}
+          gltf-model="dracoDecoderPath: https://www.gstatic.com/draco/v1/decoders/"
         >
           <a-assets ref={assetsRef}>
             <a-asset-item
               id="body"
-              src="/yamaha_ae88/yamaha_ae88_body.gltf"
+              src="/yamaha_ae88_draco/yamaha_ae88_body.gltf"
             ></a-asset-item>
             <a-asset-item
               id="roof"
-              src="/yamaha_ae88/yamaha_ae88_roof.gltf"
+              src="/yamaha_ae88_draco/yamaha_ae88_roof.gltf"
             ></a-asset-item>
             <a-asset-item
               id="frame1"
-              src="/yamaha_ae88/yamaha_ae88_frame1.gltf"
+              src="/yamaha_ae88_draco/yamaha_ae88_frame1.gltf"
             ></a-asset-item>
             <a-asset-item
               id="frame2"
-              src="/yamaha_ae88/yamaha_ae88_frame2.gltf"
+              src="/yamaha_ae88_draco/yamaha_ae88_frame2.gltf"
             ></a-asset-item>
             <a-asset-item
               id="frameR"
-              src="/yamaha_ae88/yamaha_ae88_frameR.gltf"
+              src="/yamaha_ae88_draco/yamaha_ae88_frameR.gltf"
             ></a-asset-item>
             <a-asset-item
               id="frameF"
-              src="/yamaha_ae88/yamaha_ae88_frameF.gltf"
+              src="/yamaha_ae88_draco/yamaha_ae88_frameF.gltf"
             ></a-asset-item>
             <a-asset-item
               id="TireFL"
-              src="/yamaha_ae88/yamaha_ae88_TireFL.gltf"
+              src="/yamaha_ae88_draco/yamaha_ae88_TireFL.gltf"
             ></a-asset-item>
             <a-asset-item
               id="TireFR"
-              src="/yamaha_ae88/yamaha_ae88_TireFR.gltf"
+              src="/yamaha_ae88_draco/yamaha_ae88_TireFR.gltf"
             ></a-asset-item>
             <a-asset-item
               id="TireRL"
-              src="/yamaha_ae88/yamaha_ae88_TireRL.gltf"
+              src="/yamaha_ae88_draco/yamaha_ae88_TireRL.gltf"
             ></a-asset-item>
             <a-asset-item
               id="TireRR"
-              src="/yamaha_ae88/yamaha_ae88_TireRR.gltf"
+              src="/yamaha_ae88_draco/yamaha_ae88_TireRR.gltf"
             ></a-asset-item>
             {mapAssets}
           </a-assets>
 
           {areAssetsReady ? (
             <>
-              <a-entity id="rig" movement-controls="fly: false;" vehicle-controller>
+              {/* <a-entity id="rig" movement-controls="fly: false;" vehicle-controller>
                 <a-entity
                   camera
                   position="0 1.2 0"
@@ -125,7 +126,7 @@ export default function AframeScene() {
                 ></a-entity>
                 <a-entity oculus-touch-controls="hand: left"></a-entity>
                 <a-entity oculus-touch-controls="hand: right"></a-entity>
-              </a-entity>
+              </a-entity> */}
 
               <a-sky color="#FFFFFF"></a-sky>
 
