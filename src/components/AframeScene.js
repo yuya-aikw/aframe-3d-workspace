@@ -3,8 +3,41 @@
 import { useEffect, useRef, useState } from "react";
 import RosConnection from './ros/RosConnection';
 import LidarData from "./ros/LidarData";
+import MarkerData from "./ros/MarkerData";
 import { processMapObjects } from './map/MapObjects';
 import './vehicle/VehicleController';
+
+(function () {
+  if (typeof window === "undefined" || !window.AFRAME) return;
+  const AFRAME = window.AFRAME;
+  /**
+   * 'refresh-mjpeg' コンポーネント
+   * MJPEGストリームをソースとするマテリアルのテクスチャを
+   * 毎フレーム強制的に更新します。
+   */
+  AFRAME.registerComponent('refresh-mjpeg', {
+    // 依存関係: materialコンポーネントが先に読み込まれるのを待つ
+    dependencies: ['material'],
+
+    init: function () {
+      // el は、このコンポーネントがアタッチされた要素 (<a-plane>)
+      const el = this.el;
+
+      // テクスチャが最初に読み込まれた（静止画が表示された）タイミングで実行
+      el.addEventListener('materialtextureloaded', () => {
+        const material = el.getObject3D('mesh').material;
+        if (!material.map) {
+          // マップ(テクスチャ)がなければ何もしない
+          return;
+        }
+        // A-Frameの毎フレーム更新ループ(tick)に関数を登録
+        this.tick = function () {
+          material.map.needsUpdate = true;
+        }
+      });
+    }
+  });
+})();
 
 export default function AframeScene() {
   const [isAframeReady, setIsAframeReady] = useState(false);
@@ -126,11 +159,25 @@ export default function AframeScene() {
             </a-entity>
           )}
 
-          <RosConnection rosUrl="wss://localhost:9090" rosDomainId="0" setRos={setRos} />
+          <RosConnection rosUrl="wss://localhost:9090" rosDomainId="114" setRos={setRos} />
           {ros &&
-            <LidarData ros={ros} position="0 1 0" rotation="0 0 0"/>
+            <>
+              <LidarData ros={ros} position="0 1 0" rotation="0 0 0" />
+              {/* <MarkerData ros={ros} /> */}
+            </>
           }
-          
+
+          <a-assets>
+            <img
+              id="servercam"
+              src="https://localhost:5000/video_feed"
+              crossOrigin="anonymous"
+              style={{ display: 'none' }} />
+          </a-assets>
+          <a-plane id="window" geometry="primitive: plane; width: 2; height: 1.5" material="src: #servercam"
+            position="0 1.5 -3" refresh-mjpeg>
+          </a-plane>
+
         </a-scene>
       ) : (
         <div className="flex h-full items-center justify-center">
