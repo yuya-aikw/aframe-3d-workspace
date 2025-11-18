@@ -22,11 +22,11 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <head>
         <Script
-          src="https://aframe.io/releases/1.5.0/aframe.min.js"
+          src="/vendor/aframe/aframe.min.js"
           strategy="beforeInteractive"
         />
         <Script
-          src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"
+          src="/vendor/aframe/aframe-extras.min.js"
           strategy="beforeInteractive"
         />
       </head>
