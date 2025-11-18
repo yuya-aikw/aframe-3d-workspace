@@ -38,44 +38,8 @@ export default function AframeScene() {
         >
           <a-assets ref={assetsRef}>
             <a-asset-item
-              id="body"
-              src="/yamaha_ae88/yamaha_ae88_body.gltf"
-            ></a-asset-item>
-            <a-asset-item
-              id="roof"
-              src="/yamaha_ae88/yamaha_ae88_roof.gltf"
-            ></a-asset-item>
-            <a-asset-item
-              id="frame1"
-              src="/yamaha_ae88/yamaha_ae88_frame1.gltf"
-            ></a-asset-item>
-            <a-asset-item
-              id="frame2"
-              src="/yamaha_ae88/yamaha_ae88_frame2.gltf"
-            ></a-asset-item>
-            <a-asset-item
-              id="frameR"
-              src="/yamaha_ae88/yamaha_ae88_frameR.gltf"
-            ></a-asset-item>
-            <a-asset-item
-              id="frameF"
-              src="/yamaha_ae88/yamaha_ae88_frameF.gltf"
-            ></a-asset-item>
-            <a-asset-item
-              id="TireFL"
-              src="/yamaha_ae88/yamaha_ae88_TireFL.gltf"
-            ></a-asset-item>
-            <a-asset-item
-              id="TireFR"
-              src="/yamaha_ae88/yamaha_ae88_TireFR.gltf"
-            ></a-asset-item>
-            <a-asset-item
-              id="TireRL"
-              src="/yamaha_ae88/yamaha_ae88_TireRL.gltf"
-            ></a-asset-item>
-            <a-asset-item
-              id="TireRR"
-              src="/yamaha_ae88/yamaha_ae88_TireRR.gltf"
+              id="assembly"
+              src="/YAMAHA_AE88_color_Assembly/YAMAHA_AE88_color_Assembly.gltf"
             ></a-asset-item>
           </a-assets>
 
@@ -101,18 +65,9 @@ export default function AframeScene() {
                 height="10"
                 color="#888888"
               ></a-plane>
-
+              
               <a-entity id="yamaha_ae88" position="0 1 0" rotation="0 0 0">
-                <a-entity gltf-model="#body"></a-entity>
-                <a-entity gltf-model="#roof"></a-entity>
-                <a-entity gltf-model="#frame1"></a-entity>
-                <a-entity gltf-model="#frame2"></a-entity>
-                <a-entity gltf-model="#frameR"></a-entity>
-                <a-entity gltf-model="#frameF"></a-entity>
-                <a-entity gltf-model="#TireFL"></a-entity>
-                <a-entity gltf-model="#TireFR"></a-entity>
-                <a-entity gltf-model="#TireRL"></a-entity>
-                <a-entity gltf-model="#TireRR"></a-entity>
+                <a-entity gltf-model="#assembly"></a-entity>
               </a-entity>
             </>
           ) : (
@@ -123,9 +78,9 @@ export default function AframeScene() {
 
           <RosConnection rosUrl="wss://localhost:9090" rosDomainId="0" setRos={setRos} />
           {ros &&
-            <LidarData ros={ros} position="0 1 0" rotation="0 0 0"/>
+            <LidarData ros={ros} position="0 1 0" rotation="0 0 0" />
           }
-          
+
         </a-scene>
       ) : (
         <div className="flex h-full items-center justify-center">
