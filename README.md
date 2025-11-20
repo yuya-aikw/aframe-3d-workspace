@@ -32,3 +32,7 @@ jms2025_demo
 - `ros2 launch livox_ros_driver2 rviz_MID360_launch.py`
 - rviz2の画面で点群が見えていることを確認したら画面を消してOK
 ## ターミナル4: USBカメラの起動
+- `cd src/components/camera/motion_jpeg.py`
+- `source venv/bin/activate`
+- (venv)`python motion_jpeg.py`
+- 縦，横，レートを調整する
