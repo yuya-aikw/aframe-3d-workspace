@@ -6,22 +6,42 @@ import time
 
 app = Flask(__name__)
 CORS(app) 
+PORT = 5000
+
+"""
+sudo apt install v4l-utils
+v4l2-ctl -d /dev/video0 --list-formats-ext
+使えるフォーマットを確認すること
+
+"""
+WIDTH = 1920
+HEIGHT = 1080
+FPS = 15
+
 video = cv2.VideoCapture(0)
+video.set(cv2.CAP_PROP_FRAME_WIDTH, WIDTH)
+video.set(cv2.CAP_PROP_FRAME_HEIGHT, HEIGHT)
+video.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
+video.set(cv2.CAP_PROP_FPS, FPS) 
+actual_w = video.get(cv2.CAP_PROP_FRAME_WIDTH)
+actual_h = video.get(cv2.CAP_PROP_FRAME_HEIGHT)
+actual_fps = video.get(cv2.CAP_PROP_FPS)
+print(f"設定解像度: {actual_w} x {actual_h}, FPS: {actual_fps}")
 
 model = YOLO('./yolo11n.pt')
-
-PORT = 5000
 
 def gen_frames():
     while True:
         success, frame = video.read()
         if not success:
             break
-        # yolo
-        frame = cv2.resize(frame, (640, 480))
         
-        results = model.predict(frame, classes=0, verbose=False, imgsz=320)
-        # frame = yolo_draw(results,frame)
+        # yolo
+        frame = cv2.resize(frame, None,fx=0.5,fy=0.5)
+        results = model.predict(frame, classes=0, verbose=False,
+                                imgsz=320,
+                                conf=0.8,
+                                iou=0.7,)
         frame = results[0].plot()
         
         # streaming
@@ -29,26 +49,6 @@ def gen_frames():
         frame = buffer.tobytes()
         yield (b'--frame\r\n'
                 b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-        # time.sleep(0.2)
-
-def yolo_draw(results, frame):
-    for box in results[0].boxes:
-        # BBoxの座標 (xyxy形式: [x1, y1, x2, y2])
-        # .cpu()と.numpy()でGPU/TensorからCPU/Numpy配列に変換します
-        x1, y1, x2, y2 = box.xyxy[0].cpu().numpy().astype(int)
-        # 信頼度 (Confidence)
-        conf = box.conf[0].cpu().numpy()
-        # クラスID (今回は 0 のはず)
-        cls_id = int(box.cls[0].cpu().numpy())
-        class_name = model.names[cls_id] # 'person'
-        # (デバッグ用) 取得した情報でBBoxとラベルを描画
-        label = f"{conf:.2f}"
-        # BBoxを描画
-        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-        # ラベル（クラス名と信頼度）を描画
-        cv2.putText(frame, label, (x1, y1 - 10), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-    return frame
     
 @app.route('/video_feed')
 def video_feed():
