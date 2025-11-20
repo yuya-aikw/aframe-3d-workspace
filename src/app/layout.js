@@ -21,14 +21,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <Script
-          src="/vendor/aframe/aframe.min.js"
-          strategy="beforeInteractive"
-        />
-        <Script
-          src="/vendor/aframe/aframe-extras.min.js"
-          strategy="beforeInteractive"
-        />
+
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

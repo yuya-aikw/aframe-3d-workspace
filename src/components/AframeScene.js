@@ -1,9 +1,37 @@
 "use client";
+import 'aframe';
 
 import { useEffect, useRef, useState } from "react";
 import RosConnection from './ros/RosConnection';
 import LidarData from "./ros/LidarData";
 import './vehicle/VehicleController';
+
+(function () {
+  if (typeof window === "undefined" || !window.AFRAME) return;
+  const AFRAME = window.AFRAME;
+
+  AFRAME.registerComponent('refresh-mjpeg', {
+    dependencies: ['material'],
+
+    init: function () {
+      this.material = null;
+
+      const el = this.el;
+      el.addEventListener('materialtextureloaded', () => {
+        const mesh = el.getObject3D('mesh');
+        if (!mesh) return;
+        this.material = mesh.material;
+      });
+    },
+
+    tick: function () {
+      if (!this.material || !this.material.map) return;
+      this.material.map.needsUpdate = true;
+    }
+  });
+})();
+
+
 
 export default function AframeScene() {
   const [isAframeReady, setIsAframeReady] = useState(false);
@@ -31,7 +59,7 @@ export default function AframeScene() {
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-white text-black">
       {isAframeReady ? (
-        <a-scene
+        <a-scene gltf-model="dracoDecoderPath: /draco/"
           embedded
           vr-mode-ui="enabled: false"
           style={{ height: "100vh", width: "100vw" }}
@@ -41,7 +69,14 @@ export default function AframeScene() {
               id="assembly"
               src="/YAMAHA_AE88_color_Assembly/YAMAHA_AE88_color_Assembly.gltf"
             ></a-asset-item>
+              <img
+              id="servercam"
+              src="https://192.168.1.160:5000/video_feed"
+              crossOrigin="anonymous"
+            />
           </a-assets>
+
+
 
           {areAssetsReady ? (
             <>
@@ -65,6 +100,14 @@ export default function AframeScene() {
                 height="10"
                 color="#888888"
               ></a-plane>
+
+              <a-plane
+                material="src: #servercam"
+                width="8"
+                height="4.5"
+                position="0 1.5 -3"
+                refresh-mjpeg
+              />
               
               <a-entity id="yamaha_ae88" position="0 1 0" rotation="0 0 0">
                 <a-entity gltf-model="#assembly"></a-entity>
@@ -76,11 +119,12 @@ export default function AframeScene() {
             </a-entity>
           )}
 
-          <RosConnection rosUrl="wss://localhost:9090" rosDomainId="0" setRos={setRos} />
+          {/* <RosConnection rosUrl="wss://192.168.1.160:9080" rosDomainId="115" setRos={setRos} />
           {ros &&
             <LidarData ros={ros} position="0 1 0" rotation="0 0 0" />
-          }
+          } */}
 
+        
         </a-scene>
       ) : (
         <div className="flex h-full items-center justify-center">
