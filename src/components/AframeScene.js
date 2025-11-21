@@ -67,7 +67,7 @@ export default function AframeScene() {
           <a-assets ref={assetsRef}>
             <a-asset-item
               id="assembly"
-              src="/YAMAHA_AE88_color_Assembly/YAMAHA_AE88_color_Assembly.gltf"
+              src="/YAMAHA_AE88_color_Assembly/YAMAHA_AE88_color_Assembly_flipped.gltf"
             ></a-asset-item>
               <img
               id="servercam"
@@ -103,13 +103,15 @@ export default function AframeScene() {
 
               <a-plane
                 material="src: #servercam"
-                width="8"
-                height="4.5"
-                position="0 1.5 -3"
+                width="1.6"
+                height="0.9"
+                position="0 1 3"
+                rotation="0 180 0"
+                opacity="0.8"
                 refresh-mjpeg
               />
               
-              <a-entity id="yamaha_ae88" position="0 1 0" rotation="0 0 0">
+              <a-entity id="yamaha_ae88" position="0 0.3003405034542084 0" rotation="0 0 0">
                 <a-entity gltf-model="#assembly"></a-entity>
               </a-entity>
             </>
@@ -119,10 +121,10 @@ export default function AframeScene() {
             </a-entity>
           )}
 
-          {/* <RosConnection rosUrl="wss://192.168.1.160:9080" rosDomainId="115" setRos={setRos} />
+          <RosConnection rosUrl="wss://192.168.1.160:9080" rosDomainId="115" setRos={setRos} />
           {ros &&
-            <LidarData ros={ros} position="0 1 0" rotation="0 0 0" />
-          } */}
+            <LidarData ros={ros} position="1 1.304 0.5" rotation="21.386 0 1.818" />
+          }
 
         
         </a-scene>
