@@ -3,6 +3,7 @@ import cv2
 from flask_cors import CORS
 from ultralytics import YOLO
 import time
+import threading
 
 app = Flask(__name__)
 CORS(app) 
@@ -18,37 +19,90 @@ WIDTH = 1920
 HEIGHT = 1080
 FPS = 15
 
-video = cv2.VideoCapture(0)
-video.set(cv2.CAP_PROP_FRAME_WIDTH, WIDTH)
-video.set(cv2.CAP_PROP_FRAME_HEIGHT, HEIGHT)
-video.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
-video.set(cv2.CAP_PROP_FPS, FPS) 
-actual_w = video.get(cv2.CAP_PROP_FRAME_WIDTH)
-actual_h = video.get(cv2.CAP_PROP_FRAME_HEIGHT)
-actual_fps = video.get(cv2.CAP_PROP_FPS)
-print(f"設定解像度: {actual_w} x {actual_h}, FPS: {actual_fps}")
+
+def create_capture():
+    cap = cv2.VideoCapture(0)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, WIDTH)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, HEIGHT)
+    cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
+    cap.set(cv2.CAP_PROP_FPS, FPS)
+    actual_w = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+    actual_h = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+    actual_fps = cap.get(cv2.CAP_PROP_FPS)
+    print(f"設定解像度: {actual_w} x {actual_h}, FPS: {actual_fps}")
+    return cap
+
+
+video = create_capture()
 
 model = YOLO('./yolo11n.pt')
 
-def gen_frames():
+latest_frame = None
+frame_lock = threading.Lock()
+
+
+def process_with_yolo(frame):
+    resized = cv2.resize(frame, None, fx=0.5, fy=0.5)
+    results = model.predict(
+        resized,
+        classes=0,
+        verbose=False,
+        imgsz=320,
+        conf=0.5,
+        iou=0.7,
+    )
+    return results[0].plot()
+
+
+def capture_loop():
+    global video, latest_frame
     while True:
+        if not video.isOpened():
+            video.release()
+            video = create_capture()
+            time.sleep(0.2)
+            continue
+
         success, frame = video.read()
         if not success:
-            break
-        
-        # yolo
-        frame = cv2.resize(frame, None,fx=0.5,fy=0.5)
-        results = model.predict(frame, classes=0, verbose=False,
-                                imgsz=320,
-                                conf=0.5,
-                                iou=0.7,)
-        frame = results[0].plot()
-        
-        # streaming
+            video.release()
+            video = create_capture()
+            time.sleep(0.2)
+            continue
+
+        try:
+            processed = process_with_yolo(frame)
+        except Exception as exc:
+            print(f"YOLO処理でエラー: {exc}")
+            time.sleep(0.05)
+            continue
+
+        with frame_lock:
+            latest_frame = processed
+
+
+threading.Thread(target=capture_loop, daemon=True).start()
+
+
+def gen_frames():
+    while True:
+        with frame_lock:
+            frame = None if latest_frame is None else latest_frame.copy()
+
+        if frame is None:
+            time.sleep(0.01)
+            continue
+
         ret, buffer = cv2.imencode('.jpg', frame)
-        frame = buffer.tobytes()
-        yield (b'--frame\r\n'
-                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        if not ret:
+            time.sleep(0.01)
+            continue
+
+        chunk = buffer.tobytes()
+        yield (
+            b'--frame\r\n'
+            b'Content-Type: image/jpeg\r\n\r\n' + chunk + b'\r\n'
+        )
     
 @app.route('/video_feed')
 def video_feed():
