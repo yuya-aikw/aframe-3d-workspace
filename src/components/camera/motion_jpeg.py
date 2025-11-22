@@ -40,7 +40,7 @@ def gen_frames():
         frame = cv2.resize(frame, None,fx=0.5,fy=0.5)
         results = model.predict(frame, classes=0, verbose=False,
                                 imgsz=320,
-                                conf=0.8,
+                                conf=0.5,
                                 iou=0.7,)
         frame = results[0].plot()
         

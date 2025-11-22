@@ -80,15 +80,15 @@ export default function AframeScene() {
 
           {areAssetsReady ? (
             <>
-              <a-entity id="rig" movement-controls="fly: false;" vehicle-controller>
+              {/* <a-entity id="rig" movement-controls="fly: false;" vehicle-controller>
                 <a-entity
                   camera
-                  position="0 1.2 0"
+                  position="0 -1.5 0"
                   look-controls="pointerLockEnabled: false"
                 ></a-entity>
                 <a-entity oculus-touch-controls="hand: left"></a-entity>
                 <a-entity oculus-touch-controls="hand: right"></a-entity>
-              </a-entity>
+              </a-entity> */}
 
               <a-sky color="#FFFFFF"></a-sky>
 
@@ -111,7 +111,7 @@ export default function AframeScene() {
                 refresh-mjpeg
               />
               
-              <a-entity id="yamaha_ae88" position="0 0.3003405034542084 0" rotation="0 0 0">
+              <a-entity id="yamaha_ae88" position="0 0.3003405034542084 -0.3" rotation="0 0 0">
                 <a-entity gltf-model="#assembly"></a-entity>
               </a-entity>
             </>
