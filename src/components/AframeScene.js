@@ -103,11 +103,11 @@ export default function AframeScene() {
 
               <a-plane
                 material="src: #servercam"
-                width="1.6"
-                height="0.9"
-                position="0 1 3"
+                width="6.4"
+                height="3.2"
+                position="0 2 8"  
                 rotation="0 180 0"
-                opacity="0.8"
+                opacity="0.9"
                 refresh-mjpeg
               />
               
@@ -123,7 +123,7 @@ export default function AframeScene() {
 
           <RosConnection rosUrl="wss://192.168.1.160:9080" rosDomainId="115" setRos={setRos} />
           {ros &&
-            <LidarData ros={ros} position="1 1.304 0.5" rotation="21.386 0 1.818" />
+            <LidarData ros={ros} position="0.5 1.304 1.0" rotation="21.386 0 1.818" />
           }
 
         

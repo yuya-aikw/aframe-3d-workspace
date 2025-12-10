@@ -108,7 +108,7 @@ const Message2ThreePointsXYZ = ({ message ,position, rotation}) => {
         if (!pointsRef.current) {
             const material = new THREE.PointsMaterial({ 
                 color: 0x00ff00, 
-                size: 0.05, 
+                size: 0.015, 
                 sizeAttenuation: true
              });
             pointsRef.current = new THREE.Points(geometryRef.current, material);
