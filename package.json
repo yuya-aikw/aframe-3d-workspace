@@ -4,12 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "proxy": "local-ssl-proxy --source 3001 --target 3000 --cert 192.168.1.160+3.pem --key 192.168.1.160+3-key.pem --hostname 0.0.0.0",
     "dev-https": "next dev --turbopack --experimental-https",
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
+    "aframe": "^1.7.1",
+    "aframe-extras": "^7.6.0",
     "next": "16.0.1",
     "react": "19.2.0",
     "react-dom": "19.2.0",

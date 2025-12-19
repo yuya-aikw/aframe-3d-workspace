@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import RosTopicListener from './RosTopicListener';
 
 // Mid-360 の点群をデコードしてA-frameの単色のPointsとして表示するコンポーネント
@@ -13,7 +13,6 @@ const Message2ThreePointsXYZ = ({ message, position, rotation }) => {
     const pointsRef = useRef(null);
 
     useEffect(() => {
-        const msg = message;
         const el = entityRef.current;
 
         // A-Frame entity が準備できるまで待機
@@ -26,7 +25,7 @@ const Message2ThreePointsXYZ = ({ message, position, rotation }) => {
             return;
         }
 
-        if (!msg || !msg.data || !msg.width) {
+        if (!message || !message.data || !message.width) {
             // remove existing points if any
             if (pointsRef.current) {
                 if (typeof el.removeObject3D === 'function') el.removeObject3D('points');
@@ -38,9 +37,10 @@ const Message2ThreePointsXYZ = ({ message, position, rotation }) => {
             }
             return;
         }
-        const binaryString = atob(msg.data);
-        const rows = msg.width || 0;
-        const stride = msg.point_step || 32;  // デフォルト32バイト（標準的なPointCloud2）
+
+        const binaryString = atob(message.data);
+        const rows = message.width || 0;
+        const stride = message.point_step || 32; // デフォルト32バイト（標準的なPointCloud2）
         const expectedLen = rows * stride;
 
         // 入力チェック
@@ -57,11 +57,10 @@ const Message2ThreePointsXYZ = ({ message, position, rotation }) => {
         const positionArray = new Float32Array(rows * 3);
 
         // xyz のオフセットを取得（デフォルトは標準的な配置）
-        const xOffset = msg.fields?.[0]?.offset || 0;
-        const yOffset = msg.fields?.[1]?.offset || 4;
-        const zOffset = msg.fields?.[2]?.offset || 8;
+        const xOffset = message.fields?.[0]?.offset || 0;
+        const yOffset = message.fields?.[1]?.offset || 4;
+        const zOffset = message.fields?.[2]?.offset || 8;
 
-        let hasNaN = false;
         for (let i = 0; i < rows; i++) {
             const base = i * stride;
             // 範囲チェック
@@ -75,9 +74,7 @@ const Message2ThreePointsXYZ = ({ message, position, rotation }) => {
             const z = dataView.getFloat32(base + zOffset, true);
 
             // NaN チェック
-            if (isNaN(x) || isNaN(y) || isNaN(z)) {
-                hasNaN = true;
-                // NaN の場合は原点（0,0,0）にする
+            if (Number.isNaN(x) || Number.isNaN(y) || Number.isNaN(z)) {
                 positionArray[i * 3] = 0;
                 positionArray[i * 3 + 1] = 0;
                 positionArray[i * 3 + 2] = 0;
@@ -109,8 +106,8 @@ const Message2ThreePointsXYZ = ({ message, position, rotation }) => {
         if (!pointsRef.current) {
             const material = new THREE.PointsMaterial({
                 color: 0x00ff00,
-                size: 0.01,
-                sizeAttenuation: true
+                size: 0.015,
+                sizeAttenuation: true,
             });
             pointsRef.current = new THREE.Points(geometryRef.current, material);
             if (typeof el.setObject3D === 'function') {
@@ -124,19 +121,17 @@ const Message2ThreePointsXYZ = ({ message, position, rotation }) => {
     }, [message, position, rotation]);
 
     // cleanup on unmount
-    useEffect(() => {
-        return () => {
-            const el = entityRef.current;
-            if (!el) return;
-            if (pointsRef.current) {
-                if (typeof el.removeObject3D === 'function') el.removeObject3D('points');
-                else if (el.object3D && pointsRef.current.parent) el.object3D.remove(pointsRef.current);
-                if (pointsRef.current.geometry) pointsRef.current.geometry.dispose();
-                if (pointsRef.current.material) pointsRef.current.material.dispose();
-                pointsRef.current = null;
-            }
-            geometryRef.current = null;
-        };
+    useEffect(() => () => {
+        const el = entityRef.current;
+        if (!el) return;
+        if (pointsRef.current) {
+            if (typeof el.removeObject3D === 'function') el.removeObject3D('points');
+            else if (el.object3D && pointsRef.current.parent) el.object3D.remove(pointsRef.current);
+            if (pointsRef.current.geometry) pointsRef.current.geometry.dispose();
+            if (pointsRef.current.material) pointsRef.current.material.dispose();
+            pointsRef.current = null;
+        }
+        geometryRef.current = null;
     }, []);
 
     return <a-entity ref={entityRef} position={position} rotation={rotation} />;
@@ -145,10 +140,10 @@ const Message2ThreePointsXYZ = ({ message, position, rotation }) => {
 const LidarData = ({
     ros,
     topicName = '/livox/lidar',
-    messageType = 'sensor_msgs/PointCloud2',
-    throttleMs = 200, //200ms,5Hz でa-frame更新
-    position = "0 0 0",
-    rotation = "0 0 0"
+    messageType = 'sensor_msgs/msg/PointCloud2',
+    throttleMs = 100, //100ms,10Hz でa-frame更新
+    position = '0 0 0',
+    rotation = '0 0 0',
 }) => {
     const [message, setMessage] = useState(null);
     const [sceneReady, setSceneReady] = useState(false);
@@ -156,7 +151,7 @@ const LidarData = ({
 
     // A-Frame シーンの初期化を待つ
     useEffect(() => {
-        const checkScene = () => {s
+        const checkScene = () => {
             const scene = document.querySelector('a-scene');
             if (scene?.hasLoaded) {
                 setSceneReady(true);
@@ -181,14 +176,10 @@ const LidarData = ({
                 throttleMs={throttleMs}
             />
             {sceneReady && (
-                <Message2ThreePointsXYZ
-                    message={message}
-                    position={position}
-                    rotation={rotation}
-                />
+                <Message2ThreePointsXYZ message={message} position={position} rotation={rotation} />
             )}
         </>
     );
-}
+};
 
 export default LidarData;

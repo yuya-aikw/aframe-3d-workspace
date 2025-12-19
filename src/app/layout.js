@@ -2,15 +2,15 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+//const geistSans = Geist({
+//  variable: "--font-geist-sans",
+//  subsets: ["latin"],
+//});
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+//const geistMono = Geist_Mono({
+//  variable: "--font-geist-mono",
+//  subsets: ["latin"],
+//});
 
 export const metadata = {
   title: "Create Next App",
@@ -21,17 +21,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <Script
-          src="https://aframe.io/releases/1.5.0/aframe.min.js"
-          strategy="beforeInteractive"
-        />
-        <Script
-          src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"
-          strategy="beforeInteractive"
-        />
+{/*}        className={`${geistSans.variable} ${geistMono.variable} antialiased`}*/}
+
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
       </body>

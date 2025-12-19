@@ -20,9 +20,35 @@ const RosTopicListener = forwardRef(({
   const topicRef = useRef(null);
   const handlerRef = useRef(null);
   const lastTsRef = useRef(0);
+  const onMessageRef = useRef(onMessage);
+
+  // Keep onMessage callback up to date
+  useEffect(() => {
+    onMessageRef.current = onMessage;
+  }, [onMessage]);
+
+  const internalHandler = (message) => {
+    // Ensure message exists and has expected structure based on messageType
+    if (!message) return;
+    const now = Date.now();
+    if (throttleMs > 0 && now - lastTsRef.current < throttleMs) return;
+    lastTsRef.current = now;
+
+    try {
+      // Pass ROS message to callback. Message structure matches messageType
+      onMessageRef.current(message);
+    } catch (e) {
+      console.warn(`Error in onMessage handler for ${messageType}:`, e);
+    }
+  };
 
   useEffect(() => {
-    if (!ros) return;
+    if (!ros) {
+      // Clean up when ros becomes null
+      unsubscribe();
+      topicRef.current = null;
+      return;
+    }
 
     // Create a Topic instance for this listener
     const topic = new ROSLIB.Topic({
@@ -41,21 +67,6 @@ const RosTopicListener = forwardRef(({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ros, topicName, messageType]);
-
-  const internalHandler = (message) => {
-    // Ensure message exists and has expected structure based on messageType
-    if (!message) return;
-    const now = Date.now();
-    if (throttleMs > 0 && now - lastTsRef.current < throttleMs) return;
-    lastTsRef.current = now;
-
-    try {
-      // Pass ROS message to callback. Message structure matches messageType
-      onMessage(message);
-    } catch (e) {
-      console.warn(`Error in onMessage handler for ${messageType}:`, e);
-    }
-  };
 
   const subscribe = () => {
     if (!topicRef.current) return;
