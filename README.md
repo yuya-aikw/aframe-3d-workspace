@@ -1,38 +1,65 @@
 # Info
-[Japan Mobility Show Nagoya 2025 (2025/11/22~2025/11/24)](https://www.japan-mobility-show.com/) のWebXR実装
 
 # File Structure
-- [作っていただいた車体のモデル](https://nucl.slack.com/archives/C09LP0QSBM3/p1761111898226899?thread_ts=1760572530.666869&cid=C09LP0QSBM3)を展開
 ~~~
-jms2025_demo
+aframe-3d-workspace
 ├── README.md
 ├── src
-└── public
-    └── modelのファイル
+└── certificates
 ~~~
 
+# Setup
+## mkcert
+~~~
+# install mkcert
+sudo apt update
+sudo apt install mkcert libnss3-tools
+mkcert -install
+
+# create CA certificate and key
+mkdir certificates
+cd certificates
+mkcert localhost
+~~~
+## edit src/components/AframeScene.js
+~~~
+<RosConnection rosUrl="wss://localhost:9090" rosDomainId="0" setRos={setRos} />
+{ros && (
+  <LidarData
+    ros={ros}
+    topicName="/pcl_data"
+    messageType="sensor_msgs/msg/PointCloud2"
+    throttleMs={33}
+    position="0 0 0"
+    rotation="-90 0 0"
+    maxPoints={100000}
+    vertexColors={true}
+    pointSize={0.2}
+    sizeAttenuation={false}
+  />
+)}
+~~~
+- rosUrl
+- rosDomainID
+- topicName
+
 # Running
-## ターミナル1: httpsサーバーの起動
+## Terminal 1: Start HTTPS Server
 - `pnpm i` -> `pnpm run dev-https`
-- ブラウザで[http://localhost:3000](http://localhost:3000)にアクセス
-- [WebXRの拡張機能](https://www.crossroad-tech.com/entry/immersive-web-emulator)
-## ターミナル2: ROS2 --> WebSocket のブリッジの起動
-- `src/components/AframeScene.js` の `<RosConnection ...\>` を確認
-    - `rosUrl`: wss://<サーバーのIPアドレス>:9090
-    - `rosDomainId`: ターミナルでの`echo $ROS_DOMAIN_ID`の出力
-- ~~~
-    ros2 launch rosbridge_server rosbridge_websocket_launch.xml \
-    ssl:=true \
-    certfile:=/<jms2025_demo へのフルパス>/certificates/localhost.pem \
-    keyfile:=/<jms2025_demo へのフルパス>/certificates/localhost-key.pem
-  ~~~
-## ターミナル3: Livox Mid-360 の起動
-- lidarに電源を接続
-- lidarに生えているlanケーブルをPCに接続し，`Setting` -> `Network` で`livox_mid360`を選択
-- `ros2 launch livox_ros_driver2 rviz_MID360_launch.py`
-- rviz2の画面で点群が見えていることを確認したら画面を消してOK
-## ターミナル4: USBカメラの起動
-- `cd src/components/camera/motion_jpeg.py`
-- `source venv/bin/activate`
-- (venv)`python motion_jpeg.py`
-- 縦，横，レートを調整する
+- Access [http://localhost:3000](http://localhost:3000) in your browser
+- [WebXR Extension](https://www.crossroad-tech.com/entry/immersive-web-emulator)
+## Terminal 2: Start ROS2 --> WebSocket Bridge
+- Check `<RosConnection ...\>` in `src/components/AframeScene.js`
+    - `rosUrl`: wss://<server IP address>:9090
+    - `rosDomainId`: Output of `echo $ROS_DOMAIN_ID` in the terminal
+~~~
+ros2 launch rosbridge_server rosbridge_websocket_launch.xml \
+  ssl:=true \
+  certfile:=/<full path to jms2025_demo>/certificates/localhost.pem \
+  keyfile:=/<full path to jms2025_demo>/certificates/localhost-key.pem
+
+or
+
+source ros2_websocket.sh
+~~~
+## Terminal 3: Start Realsense

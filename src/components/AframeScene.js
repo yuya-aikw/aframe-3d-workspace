@@ -34,7 +34,7 @@ export default function AframeScene() {
               <a-entity camera look-controls wasd-controls="fly: true"></a-entity>
             </a-entity>
 
-            <RosConnection rosUrl="wss://localhost:9090" rosDomainId="114" setRos={setRos} />
+            <RosConnection rosUrl="wss://localhost:9090" rosDomainId="0" setRos={setRos} />
             {ros && (
               <LidarData
                 ros={ros}

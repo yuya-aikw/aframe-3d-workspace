@@ -18,6 +18,10 @@ const POINT_FIELD_TYPE_INFO = {
     8: { size: 8, reader: (dv, o, le) => dv.getFloat64(o, le) },
 };
 
+// Track prior message timestamp to log elapsed time between decodes
+let lastTimestampSec = null;
+let lastTimestampNanosec = null;
+
 // change for each lidar data point !!!!!!!!!!!!!!!!!
 function processPoint({
     dataView,
@@ -62,6 +66,18 @@ const decodePointCloudAttributes = (msg, positionArrayIn, colorArrayIn, cachedFi
 
     const totalPoints = width * height;
 
+    // Compute elapsed time since previous message stamp
+    const currentStampSeconds = timestampSec + timestampNanosec * 1e-9;
+    const lastStampSeconds =
+        lastTimestampSec === null ? null : lastTimestampSec + (lastTimestampNanosec || 0) * 1e-9;
+    const deltaSeconds = lastStampSeconds === null ? 0 : Math.max(0, currentStampSeconds - lastStampSeconds);
+    // console.log(
+    //     `[Decode] stamp ${timestampSec}.${timestampNanosec.toString().padStart(9, '0')} ` +
+    //     `(dt=${deltaSeconds.toFixed(3)}s, hz=${(deltaSeconds > 0 ? (1.0 / deltaSeconds).toFixed(2) : 'inf')}, points=${totalPoints}) `
+    // );
+    lastTimestampSec = timestampSec;
+    lastTimestampNanosec = timestampNanosec;
+
     if (!positionArrayIn || !colorArrayIn) {
         console.warn('[Decode] No input arrays provided');
         return false;
@@ -97,13 +113,6 @@ const decodePointCloudAttributes = (msg, positionArrayIn, colorArrayIn, cachedFi
             pointIndex: i,
         });
     }
-    
-    const processTime = performance.now() - processStart;
-    const totalTime = performance.now() - startTime;
-    
-    console.log(`[Decode] Point Num: ${pointCount}, Point processing: ${processTime.toFixed(1)}[ms], Total decode time: ${totalTime.toFixed(1)}[ms]`);
-
-
     return true;
 };
 
@@ -146,10 +155,6 @@ const MessageToThreePoints = ({ message, position, rotation, maxPoints, vertexCo
 
         const pointCount = (msg.width || 0) * (msg.height || 0);
         const targetAllocLen = maxPoints * 3;
-
-        if (pointCount > maxPoints) {
-            console.warn(`LidarDataRealSense: pointCount (${pointCount}) exceeds maxPoints (${maxPoints}). Points will be truncated.`);
-        }
 
         // parse fields on first message only
         if (!cachedFieldsRef.current && msg.fields) {
