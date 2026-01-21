@@ -46,7 +46,7 @@ mkcert localhost
 # Running
 ## Terminal 1: Start HTTPS Server
 - `pnpm i` -> `pnpm run dev-https`
-- Access [http://localhost:3000](http://localhost:3000) in your browser
+- Access [https://localhost:3000](https://localhost:3000) in your browser
 - [WebXR Extension](https://www.crossroad-tech.com/entry/immersive-web-emulator)
 ## Terminal 2: Start ROS2 --> WebSocket Bridge
 - Check `<RosConnection ...\>` in `src/components/AframeScene.js`
@@ -55,8 +55,8 @@ mkcert localhost
 ~~~
 ros2 launch rosbridge_server rosbridge_websocket_launch.xml \
   ssl:=true \
-  certfile:=/<full path to jms2025_demo>/certificates/localhost.pem \
-  keyfile:=/<full path to jms2025_demo>/certificates/localhost-key.pem
+  certfile:=/<full path to aframe-3d-workspace>/certificates/localhost.pem \
+  keyfile:=/<full path to aframe-3d-workspace>/certificates/localhost-key.pem
 
 or
 
